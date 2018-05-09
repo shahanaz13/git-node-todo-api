@@ -18,9 +18,18 @@ var {user} = require('./models/user');
  		res.status(400).send(e);
  	});
  });
+ app.get('/todos',(req,res)=>{
+ 	todo.find().then((todos)=>{
+ 		res.send({todos});
+ 	},(e)=>{
+ 		res.status(400).send(e);
+ 	});
+ });
+
  app.listen(3000,()=>{
  	console.log('server is up on port 3000');
  });
+ module.exports = {app};
  
 
 
