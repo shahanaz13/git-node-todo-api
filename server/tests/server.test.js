@@ -2,8 +2,18 @@ const expect = require('expect');
 const request = require('supertest');
 const {app} = require('./../server');
 const {todo} = require('./../models/todo');
+
+const todos = [{
+	text: 'FFirst test todo'
+},
+{
+	text:'second to do'
+}];
+
 beforeEach((done)=>{
-todo.remove().then(()=>done());
+todo.remove().then(() => {
+	return todo.insertMany(todos);
+}).then(()=>done());
 });
 
 describe('post /todos', ()=>{
@@ -21,7 +31,7 @@ request(app)
    if(err){
    	return done(err); 
    }
-   todo.find().then((todos)=>{
+   todo.find({text}).then((todos)=>{
    	expect(todos.length).toBe(1);
    	expect(todos[0].text).toBe(text);
    	done();
@@ -40,11 +50,27 @@ it('should not todo with invalid body data ', (done)=>{
 			return done(err);
 		}
 		todo.find().then((todos)=>{
-   	expect(todos.length).toBe(0);
+   	expect(todos.length).toBe(2);
    	done();
    }).catch((e)=>done(e));
 });
 	});
+
+
+});
+describe('gett /todos', ()=>{
+it('should get all todos', (done)=>{
+
+var text = 'test to do text';
+request(app)
+.get('/todos')
+.expect(200)
+.expect((res)=>{
+  expect(res.body.todos.length).toBe(2);
+})
+.end(done);
+   
+});
 
 
 });
